@@ -17,23 +17,43 @@ export default {
     return {
       email: '',
       password: '',
+      showMessage: false,
+      message: '',
     }
   },
   methods: {
     async register() {
       try {
-        const userCredential = await createUserWithEmailAndPassword(auth, this.email, this.password)
-        alert('User registered: ' + userCredential.user.email)
+        await createUserWithEmailAndPassword(auth, this.email, this.password)
+
+        this.$router.push({
+          path: '/Home',
+          query: { message: 'Registration successful!' },
+        })
       } catch (error) {
-        alert(error.message)
+        this.message = error.message
+        this.showMessage = true
+
+        setTimeout(() => {
+          this.showMessage = false
+        }, 2000)
       }
     },
     async login() {
       try {
-        const userCredential = await signInWithEmailAndPassword(auth, this.email, this.password)
-        alert('Logged in: ' + userCredential.user.email)
+        const userDetails = await signInWithEmailAndPassword(auth, this.email, this.password)
+
+        this.$router.push({
+          path: '/Home',
+          query: { message: 'Successfully logged in!' },
+        })
       } catch (error) {
-        alert(error.message)
+        this.message = error.message
+        this.showMessage = true
+
+        setTimeout(() => {
+          this.showMessage = false
+        }, 2000)
       }
     },
   },
@@ -67,5 +87,35 @@ button {
 
 button:hover {
   background-color: #bfbfbf;
+}
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #00e403;
+  color: white;
+  padding: 15px 25px;
+  border-radius: 10px;
+  opacity: 0;
+  animation: fadeInOut 5s forwards;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
 }
 </style>
