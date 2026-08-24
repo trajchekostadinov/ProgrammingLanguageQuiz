@@ -69,3 +69,16 @@ export async function getAttempts(uid) {
   const snap = await getDocs(q)
   return snap.docs.map((d) => ({ id: d.id, ...d.data() }))
 }
+export async function getGlobalAttempts() {
+  const q = query(
+    collection(db, 'globalAttempts'),
+    orderBy('timestamp', 'desc')
+  )
+
+  const snap = await getDocs(q)
+
+  return snap.docs.map((d) => ({
+    id: d.id,
+    ...d.data(),
+  }))
+}

@@ -14,12 +14,23 @@ async function logout() {
 
 <template>
   <header class="navbar" v-if="authState.user">
-    <div class="brand">Код<span>Квиз</span></div>
+    <div class="brand" @click="router.push('/select')">Код Квиз</div>
     <nav>
-      <router-link :to="{ name: 'select' }">Јазици</router-link>
+      <router-link :to="{ name: 'select' }">Квиз</router-link>
       <router-link :to="{ name: 'scoreboard' }">Резултати</router-link>
-      <button class="link" @click="logout">Одјава</button>
+      <button class="link" @click="logout">Одјави се</button>
     </nav>
   </header>
   <router-view />
 </template>
+
+<style>
+  .brand {
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.brand:hover {
+  color: #4682b4;
+}
+</style>

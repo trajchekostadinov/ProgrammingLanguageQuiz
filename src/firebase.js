@@ -1,10 +1,4 @@
-// === Firebase конфигурација ===
-// Замени ги вредностите долу со твоите од Firebase Console
-// (Project settings → General → Your apps → SDK setup and configuration)
-//
-// Потребно е во Firebase Console да овозможиш:
-//  1) Authentication → Sign-in method → Email/Password
-//  2) Firestore Database → Create database (test mode за развој)
+
 
 import { initializeApp } from 'firebase/app'
 import { getAuth } from 'firebase/auth'

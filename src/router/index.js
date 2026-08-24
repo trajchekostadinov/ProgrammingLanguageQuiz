@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { authState } from '../stores/authStore.js'
 
 const routes = [
-  { path: '/', redirect: '/login' },
+  { path: '/', redirect: '/select' },
   { path: '/login', name: 'login', component: () => import('../views/LoginView.vue') },
   {
     path: '/select',
