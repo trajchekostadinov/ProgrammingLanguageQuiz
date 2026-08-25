@@ -10,11 +10,25 @@ import {
 } from '../data/questions.js'
 import { useTimer } from '../composables/useTimer.js'
 import { authState } from '../stores/authStore.js'
+import { getAuth } from 'firebase/auth'
 import {
   saveAttempt,
   spendJokerPoints,
   ensureUserDoc,
 } from '../composables/useUserData.js'
+import {
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  collection,
+  addDoc,
+  query,
+  orderBy,
+  getDocs,
+} from 'firebase/firestore'
+
+import { db } from '../firebase.js'
 
 const props = defineProps({
   language: String,
@@ -163,8 +177,11 @@ async function finishQuiz() {
 
   finished.value = true
 
-  await saveAttempt(authState.user.uid, {
-  email: authState.user.email,
+  const auth = getAuth()
+const currentUser = auth.currentUser
+
+await saveAttempt(authState.user.uid, {
+  email: currentUser?.email,
   language: props.language,
   level: props.level,
   score: attemptScore.value,

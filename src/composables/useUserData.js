@@ -28,32 +28,69 @@ export async function getUnlockedLevel(uid, languageId) {
   return userData.progress?.[languageId]?.unlockedLevel ?? 1
 }
 
-export async function saveAttempt(uid, { language, level, score, correctCount, totalQuestions }) {
-  // 1) зачувај го обидот во под-колекција
-  await addDoc(collection(db, 'users', uid, 'attempts'), {
+export async function saveAttempt(
+  uid,
+  {
+    email,
     language,
     level,
     score,
     correctCount,
     totalQuestions,
-    timestamp: Date.now(),
-  })
-
-  // 2) ажурирај вкупен score, joker поени и отклучено ниво
+  }
+) {
   const userData = await ensureUserDoc(uid)
-  const currentUnlocked = userData.progress?.[language]?.unlockedLevel ?? 1
-  const newUnlocked = correctCount === totalQuestions ? Math.max(currentUnlocked, level + 1) : currentUnlocked
+
+  await addDoc(
+    collection(db, 'users', uid, 'attempts'),
+    {
+      language,
+      level,
+      score,
+      correctCount,
+      totalQuestions,
+      timestamp: Date.now(),
+    }
+  )
+
+  await addDoc(
+    collection(db, 'globalAttempts'),
+    {
+      uid,
+      email: email || 'Непознат корисник',
+      language,
+      level,
+      score,
+      correctCount,
+      totalQuestions,
+      timestamp: Date.now(),
+    }
+  )
+
+  const currentUnlocked =
+    userData.progress?.[language]?.unlockedLevel ?? 1
+
+  const newUnlocked =
+    correctCount === totalQuestions
+      ? Math.max(currentUnlocked, level + 1)
+      : currentUnlocked
 
   const updatedProgress = {
     ...userData.progress,
-    [language]: { unlockedLevel: newUnlocked },
+    [language]: {
+      unlockedLevel: newUnlocked,
+    },
   }
 
-  await updateDoc(doc(db, 'users', uid), {
-    totalScore: (userData.totalScore || 0) + score,
-    jokerPoints: (userData.jokerPoints || 0) + score, // поените од квизот се и joker-валута
-    progress: updatedProgress,
-  })
+  await updateDoc(
+    doc(db, 'users', uid),
+    {
+      totalScore: (userData.totalScore || 0) + score,
+      jokerPoints: (userData.jokerPoints || 0) + score,
+      progress: updatedProgress,
+      email: email || null,
+    }
+  )
 }
 
 export async function spendJokerPoints(uid, amount) {
@@ -75,7 +112,7 @@ export async function getGlobalAttempts() {
     orderBy('timestamp', 'desc')
   )
 
-  const snap = await getDocs(q)
+  const snap = await getDocs(q) 
 
   return snap.docs.map((d) => ({
     id: d.id,
